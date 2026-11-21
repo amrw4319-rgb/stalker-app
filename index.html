@@ -1,0 +1,1408 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#F3F5F9" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0E1520" media="(prefers-color-scheme: dark)" />
+<title>دليل طلاب المستوى الأول | قاعدة البيانات والبحث الذكي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #F3F5F9; --surface: #FFFFFF; --ink: #101828; --muted: #566175; --faint: #8B95A7;
+    --line: #E2E7EF; --field: #F3F5F9; --accent: #1F4FD8; --accent-ink: #FFFFFF; --accent-soft: #E8EEFF;
+    --mark: #FFE88A; --shadow: 0 1px 2px rgba(16,24,40,.05), 0 8px 24px -12px rgba(16,24,40,.10);
+    --tA-bg: #E6F0FD; --tA-fg: #1B58B5;
+    --tB-bg: #E1F4F0; --tB-fg: #0C6F64;
+    --tC-bg: #EEE8FC; --tC-fg: #6439BA;
+    --tD-bg: #FCF0D9; --tD-fg: #8F5400;
+    --radius: 14px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0E1520; --surface: #162030; --ink: #E8EDF5; --muted: #A2AEC0; --faint: #7A879B;
+      --line: #263349; --field: #0E1520; --accent: #6C93FF; --accent-ink: #0B1220; --accent-soft: #1B2A4D;
+      --mark: #6B5A12; --shadow: 0 1px 2px rgba(0,0,0,.4);
+      --tA-bg: #16304F; --tA-fg: #8DBBFF;
+      --tB-bg: #12363A; --tB-fg: #6FD9CB;
+      --tC-bg: #2B2250; --tC-fg: #BDA6FF;
+      --tD-bg: #3F3014; --tD-fg: #F1BE63;
+      color-scheme: dark;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-padding-top: 150px; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+    font-family: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, system-ui, sans-serif;
+    font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  button, select, input { font: inherit; color: inherit; }
+  button { cursor: pointer; border: 0; background: none; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+  .num, .mono { font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+  .hidden { display: none !important; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* Header */
+  .top { padding: calc(18px + env(safe-area-inset-top, 0px)) 0 14px; }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .logo { width: 42px; height: 42px; border-radius: 12px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none; }
+  .logo svg { width: 22px; height: 22px; }
+  .brand h1 { margin: 0; font-size: 19px; line-height: 1.3; font-weight: 700; }
+  .brand p { margin: 0; font-size: 13px; color: var(--muted); }
+  .counter { flex: none; text-align: center; padding: 6px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); line-height: 1.25; }
+  .counter b { display: block; font-size: 18px; color: var(--accent); }
+  .counter span { font-size: 11px; color: var(--muted); }
+
+  /* Sticky search + group filter */
+  .finder { position: sticky; top: 0; z-index: 20; background: var(--bg); padding: 8px 0 10px; padding-top: calc(8px + env(safe-area-inset-top, 0px)); margin-top: -8px; }
+  .finder-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 10px; }
+  .search { position: relative; }
+  .search > svg { position: absolute; inset-block: 0; margin-block: auto; right: 14px; width: 20px; height: 20px; color: var(--faint); pointer-events: none; }
+  .search input {
+    width: 100%; height: 52px; padding: 0 44px 0 88px; font-size: 16px; /* 16px prevents iOS zoom on focus */
+    background: var(--field); border: 1.5px solid transparent; border-radius: 12px; outline: none; transition: border-color .15s, background .15s;
+  }
+  .search input::placeholder { color: var(--faint); }
+  .search input:focus { background: var(--surface); border-color: var(--accent); }
+  .search .tools { position: absolute; inset-block: 0; left: 8px; display: flex; align-items: center; gap: 6px; }
+  .icon-btn { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; color: var(--muted); }
+  .icon-btn:hover { background: var(--accent-soft); color: var(--accent); }
+  .icon-btn svg { width: 18px; height: 18px; }
+  kbd { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--faint); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 10px 2px 2px; scrollbar-width: none; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: none; display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px; border-radius: 10px; scroll-snap-align: center;
+    font-size: 14px; font-weight: 600; background: var(--field); color: var(--muted); border: 1px solid var(--line); transition: background .15s, color .15s;
+  }
+  .chip small { font-size: 11px; font-weight: 500; opacity: .75; }
+  .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+  /* Toolbar */
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 4px 2px 10px; font-size: 13px; color: var(--muted); }
+  .toolbar .hint { flex: 1 1 100%; margin: 0; line-height: 1.6; }
+  .toolbar .actions { display: flex; align-items: center; gap: 8px; margin-inline-start: auto; }
+  .select, .btn {
+    height: 40px; padding: 0 12px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line);
+    font-size: 14px; font-weight: 500; color: var(--ink); display: inline-flex; align-items: center; gap: 6px;
+  }
+  .select { padding-inline: 10px; }
+  .btn:hover, .select:hover { border-color: var(--accent); }
+  .btn svg { width: 16px; height: 16px; color: var(--muted); }
+  .link-btn { color: var(--accent); font-weight: 600; font-size: 13px; padding: 8px 4px; }
+
+  .notice { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; padding: 12px 14px; border-radius: 12px; font-size: 14px; background: var(--tD-bg); color: var(--tD-fg); }
+
+  /* Results */
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { position: sticky; top: 0; text-align: right; padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--muted); background: var(--field); border-bottom: 1px solid var(--line); }
+  tbody td { padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: var(--field); }
+  .c { text-align: center !important; }
+  .idx { color: var(--faint); font-size: 12px; width: 52px; }
+  .sid { display: inline-block; padding: 3px 10px; border-radius: 8px; background: var(--field); border: 1px solid var(--line); font-size: 13px; font-weight: 600; }
+  .name { font-weight: 600; font-size: 15px; line-height: 1.7; }
+  .tag { display: inline-block; min-width: 38px; text-align: center; padding: 2px 9px; border-radius: 8px; font-size: 12px; font-weight: 600; }
+  .tag.A { background: var(--tA-bg); color: var(--tA-fg); } .tag.B { background: var(--tB-bg); color: var(--tB-fg); }
+  .tag.C { background: var(--tC-bg); color: var(--tC-fg); } .tag.D { background: var(--tD-bg); color: var(--tD-fg); }
+  mark.hl { background: var(--mark); color: inherit; padding: 0 2px; border-radius: 4px; }
+  .copy-btn { width: 40px; height: 40px; border-radius: 10px; display: inline-grid; place-items: center; color: var(--muted); }
+  .copy-btn:hover { background: var(--accent-soft); color: var(--accent); }
+  .copy-btn svg { width: 18px; height: 18px; }
+  .copy-btn.done { color: #12805C; }
+
+  .cards { display: none; }
+  .card { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .card:last-child { border-bottom: 0; }
+  .card .body { flex: 1; min-width: 0; }
+  .card .meta { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .card .name { font-size: 15px; overflow-wrap: anywhere; }
+  .card .copy-btn { width: 44px; height: 44px; background: var(--field); border: 1px solid var(--line); flex: none; }
+  .card .copy-btn:active { transform: scale(.94); }
+
+  .empty { padding: 48px 20px; text-align: center; }
+  .empty h3 { margin: 0 0 6px; font-size: 17px; }
+  .empty p { margin: 0 auto 16px; max-width: 340px; color: var(--muted); font-size: 14px; }
+  .btn-primary { height: 44px; padding: 0 20px; border-radius: 12px; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+
+  .foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: var(--field); border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .more { height: 40px; padding: 0 16px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); color: var(--accent); font-weight: 600; }
+  .copyright { text-align: center; font-size: 12px; color: var(--faint); padding: 18px 16px 28px; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 50; transform: translate(-50%, 12px); opacity: 0; pointer-events: none;
+    background: var(--ink); color: var(--bg); padding: 11px 16px; border-radius: 12px; font-size: 14px; font-weight: 500; max-width: calc(100vw - 32px); transition: opacity .2s, transform .2s;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 719px) {
+    .table-wrap { display: none; }
+    .cards { display: block; }
+    .brand h1 { font-size: 17px; }
+    .brand p { display: none; }
+    kbd { display: none; }
+    .toolbar .actions { width: 100%; }
+    .toolbar .actions .select { flex: 1; }
+    .btn .lbl { display: none; }
+    .btn { width: 40px; padding: 0; justify-content: center; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.25v13m0-13C10.83 5.48 9.25 5 7.5 5S4.17 5.48 3 6.25v13C4.17 18.48 5.75 18 7.5 18s3.33.48 4.5 1.25m0-13C13.17 5.48 14.75 5 16.5 5c1.75 0 3.33.48 4.5 1.25v13C19.83 18.48 18.25 18 16.5 18c-1.75 0-3.33.48-4.5 1.25"/></svg>
+      </div>
+      <div>
+        <h1>دليل طلاب المستوى الأول</h1>
+        <p>قاعدة البيانات والبحث الذكي</p>
+      </div>
+    </div>
+    <div class="counter" aria-live="polite"><b class="num"><span id="statMatched">0</span></b><span>من <span id="statTotal" class="num">0</span> طالب</span></div>
+  </div>
+</header>
+
+<div class="finder">
+  <div class="wrap">
+    <div class="finder-card">
+      <div class="search">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" aria-hidden="true"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input id="searchInput" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               placeholder="ابحث بالاسم أو رقم الجلوس..." aria-label="بحث عن طالب" />
+        <div class="tools">
+          <button id="clearBtn" type="button" class="icon-btn hidden" aria-label="مسح البحث">
+            <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+          <kbd id="shortcutBadge">Ctrl+K</kbd>
+        </div>
+      </div>
+      <div id="groupPills" class="chips" role="group" aria-label="تصفية حسب المجموعة"></div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" style="padding-top:4px">
+  <div class="toolbar">
+    <p class="hint">يدعم البحث الفوري توحيد الهمزات والتاء المربوطة، والبحث بالاسم الأول والأخير معاً.</p>
+    <button id="resetAllFilters" type="button" class="link-btn hidden">إعادة ضبط الكل</button>
+    <div class="actions">
+      <label class="sr-only" for="sortSelect">الترتيب</label>
+      <select id="sortSelect" class="select">
+        <option value="relevance">الأكثر تطابقاً</option>
+        <option value="id_asc">رقم الجلوس (تصاعدي)</option>
+        <option value="id_desc">رقم الجلوس (تنازلي)</option>
+        <option value="name_asc">الاسم (أبجدياً)</option>
+        <option value="group_asc">المجموعة (A1 - D3)</option>
+      </select>
+      <button id="exportBtn" type="button" class="btn" title="تصدير النتائج الحالية إلى ملف CSV" aria-label="تصدير CSV">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span class="lbl">تصدير CSV</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="fuzzyBanner" class="notice hidden" role="status">
+    <span>لم يتم العثور على تطابق حرفي تام، فتم عرض <strong>أقرب النتائج المقترحة</strong>.</span>
+  </div>
+
+  <section class="panel">
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th class="c" style="width:56px">#</th><th style="width:140px">رقم الجلوس</th><th>اسم الطالب الكامل</th><th class="c" style="width:100px">المجموعة</th><th class="c" style="width:80px">نسخ</th>
+        </tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div id="mobileCards" class="cards"></div>
+
+    <div id="emptyState" class="empty hidden">
+      <h3>لا توجد نتائج مطابقة</h3>
+      <p>جرّب كتابة جزء آخر من الاسم أو رقم الجلوس، أو اعرض جميع الطلاب.</p>
+      <button id="emptyResetBtn" type="button" class="btn-primary">عرض جميع الطلاب</button>
+    </div>
+
+    <div class="foot">
+      <span id="showingCountText" class="num">عرض 0 من 0 طالب</span>
+      <button id="loadMoreBtn" type="button" class="more hidden">عرض المزيد</button>
+    </div>
+  </section>
+</main>
+
+<footer class="copyright">دليل طلاب المستوى الأول • البيانات الرسمية المعتمدة (11001 – 11697)</footer>
+<div id="toast" class="toast" role="status" aria-live="polite"><span id="toastMsg"></span></div>
+
+<script>
+    // =========================================================================
+    // 1. COMPLETE STUDENT DATABASE (ALL 12 PAGES EXTRACTED & CLEANED)
+    // =========================================================================
+    const STUDENTS_DATA = [
+      // --- GROUP A1 (Page 1) ---
+      { id: "11001", name: "ابراهيم فكيه محمد محمد رزق", group: "A1" },
+      { id: "11002", name: "ابراهيم محمد ابراهيم حسن على", group: "A1" },
+      { id: "11003", name: "ابراهيم محمد ابراهيم محمد عبدالعال", group: "A1" },
+      { id: "11006", name: "ابراهيم مصطفى ابراهيم محمد مصطفى", group: "A1" },
+      { id: "11007", name: "ابراهيم ياسر رمضان بيومي زامل", group: "A1" },
+      { id: "11008", name: "ابوبكر عفت احمد سليم مصطفى", group: "A1" },
+      { id: "11010", name: "احمد ابراهيم عبد الحميد محمد عبدالله", group: "A1" },
+      { id: "11011", name: "احمد ابراهيم محمد محمد السيد الريطي", group: "A1" },
+      { id: "11012", name: "احمد ابوالليل زايد محمد", group: "A1" },
+      { id: "11013", name: "احمد السيد احمد محمد عبدالوهاب", group: "A1" },
+      { id: "11014", name: "احمد السيد عبد الكريم عوض الله احمد", group: "A1" },
+      { id: "11015", name: "احمد ايمن احمد ابوطريه العداروس", group: "A1" },
+      { id: "11018", name: "احمد جمال عبد السميع محمد احمد عياد", group: "A1" },
+      { id: "11019", name: "احمد حسين فهمي محمد محمد موسى", group: "A1" },
+      { id: "11020", name: "احمد حسيني السيد عزازي السيد", group: "A1" },
+      { id: "11024", name: "احمد سامى السيد على ابراهيم", group: "A1" },
+      { id: "11025", name: "احمد سعيد محمد الطوخى اسماعيل حسنين", group: "A1" },
+      { id: "11026", name: "احمد سعيد محمد تهامى مصلحى", group: "A1" },
+      { id: "11027", name: "احمد سعيد محمد محمد ابراهيم البلم", group: "A1" },
+      { id: "11028", name: "احمد شريف محمد على السيد زيدان", group: "A1" },
+      { id: "11029", name: "احمد صابر عبدالهادي حسن على", group: "A1" },
+      { id: "11031", name: "احمد طارق صلاح السيد محمد", group: "A1" },
+      { id: "11032", name: "احمد عادل محمد محمد عبدالله", group: "A1" },
+      { id: "11033", name: "احمد عاطف محمد السعيد السيد العزازي", group: "A1" },
+      { id: "11035", name: "احمد عبد السلام محمد حسن", group: "A1" },
+      { id: "11036", name: "احمد عبد القوي محمد سليمان على", group: "A1" },
+      { id: "11038", name: "احمد عبيد اسماعيل محمد مصطفى غبن", group: "A1" },
+      { id: "11040", name: "احمد عصام رشاد احمد نصر الله", group: "A1" },
+      { id: "11041", name: "احمد عليوه سلامه عليوه اسماعيل", group: "A1" },
+      { id: "11042", name: "احمد ماجد السيد محمد", group: "A1" },
+      { id: "11043", name: "احمد محمد احمد احمد محمد المهدي", group: "A1" },
+      { id: "11044", name: "احمد محمد احمد كامل محمد العزب عمران", group: "A1" },
+      { id: "11045", name: "احمد محمد احمد محمد عبد القادر", group: "A1" },
+      { id: "11046", name: "احمد محمد جاد عبد العال فراج", group: "A1" },
+      { id: "11053", name: "احمد محمود محمد احمد محمد", group: "A1" },
+      { id: "11056", name: "احمد معتز بالله احمد علوان", group: "A1" },
+      { id: "11067", name: "اسر محمد اشرف عبد الهادي ابراهيم", group: "A1" },
+      { id: "11069", name: "اسلام احمد عبد الفتاح عبد الحميد سكر", group: "A1" },
+      { id: "11093", name: "اياد اسامه عبدالعزيز سليمان الشربيني", group: "A1" },
+      { id: "11258", name: "صلاح اشرف محمد صلاح محمد عبد الهادي العقاد", group: "A1" },
+      { id: "11268", name: "عبد الحميد ضياء الدين عبد الحميد عبد الحميد اسماعيل", group: "A1" },
+      { id: "11309", name: "على خالد محمد فوزي السيد العزازي", group: "A1" },
+      { id: "11316", name: "عمر جمال عطيه عبد الفتاح سرحان", group: "A1" },
+      { id: "11353", name: "كريم محمد عبد المنعم ابراهيم احمد", group: "A1" },
+      { id: "11434", name: "محمود احمد محمود سليمان خليفه", group: "A1" },
+      { id: "11597", name: "ابراهيم محمد ابراهيم محمد سليمان", group: "A1" },
+      { id: "11598", name: "احمد اشرف عبد المجيد حسن", group: "A1" },
+      { id: "11599", name: "احمد حمدي توفيق سويلم فراج", group: "A1" },
+      { id: "11600", name: "احمد سامى عبد القادر على هيبه", group: "A1" },
+      { id: "11601", name: "احمد صبري محمد محمد عكاشه", group: "A1" },
+      { id: "11602", name: "احمد صلاح الشحات محمد محمد قريضه", group: "A1" },
+      { id: "11603", name: "احمد عبد الفتاح مصطفى نصر مصطفى", group: "A1" },
+      { id: "11604", name: "احمد عبده حسين عبد اللطيف السيد", group: "A1" },
+      { id: "11605", name: "احمد محمد احمد ابراهيم", group: "A1" },
+      { id: "11606", name: "احمد محمد احمد رشاد محمد بركات", group: "A1" },
+      { id: "11607", name: "احمد محمد ثابت محمد السيد", group: "A1" },
+      { id: "11636", name: "عبد المجيد محمد عبد المجيد السيد عيسى زرقه", group: "A1" },
+      { id: "11694", name: "عبد السلام محمد خليفة عبد المجيد عبد العاطي", group: "A1" },
+
+      // --- GROUP A2 (Page 2) ---
+      { id: "11009", name: "احمد ابراهيم حافظ الريس", group: "A2" },
+      { id: "11030", name: "احمد صالح شحته اسماعيل", group: "A2" },
+      { id: "11039", name: "احمد عدلى عبد البديع عبد الحميد عبدالله", group: "A2" },
+      { id: "11047", name: "احمد محمد سلامه سالم سلامه", group: "A2" },
+      { id: "11048", name: "احمد محمد عبد الحليم ابراهيم عرب", group: "A2" },
+      { id: "11050", name: "احمد محمد فوزي محمد محمود", group: "A2" },
+      { id: "11052", name: "احمد محمود فاروق محمد احمد", group: "A2" },
+      { id: "11054", name: "احمد مدحت محمد رضا السيد الحملاوي", group: "A2" },
+      { id: "11055", name: "احمد مسعد ابراهيم عبدالسلام رزه", group: "A2" },
+      { id: "11057", name: "احمد وحيد فهيم جوده", group: "A2" },
+      { id: "11058", name: "احمد وليد صلاح عبد الباسط حسن", group: "A2" },
+      { id: "11059", name: "ادم امجد الشبراوي السيد بركات", group: "A2" },
+      { id: "11060", name: "ادهم اشرف محمد عبد السلام محمد عطيه", group: "A2" },
+      { id: "11061", name: "ادهم شريف عبد الرازق محمود", group: "A2" },
+      { id: "11062", name: "ادهم علاء عمر السيد خزبك", group: "A2" },
+      { id: "11065", name: "اسامه محمد عبد الخالق محمد", group: "A2" },
+      { id: "11066", name: "اسامه هاني عنتر السيد محمد", group: "A2" },
+      { id: "11068", name: "اسراء محمد عطيه عطيه ابراهيم", group: "A2" },
+      { id: "11070", name: "اسلام علاء على احمد", group: "A2" },
+      { id: "11072", name: "اسماء ايمن محمد محمد عثمان الكيلاني", group: "A2" },
+      { id: "11073", name: "اسماء عاطف محمد السيد عبد العزيز", group: "A2" },
+      { id: "11074", name: "اسماعيل احمد اسماعيل قطب", group: "A2" },
+      { id: "11076", name: "اسيل عبد العزيز عبد السميع عبد العزيز ابو النصر", group: "A2" },
+      { id: "11077", name: "اشرقت هاني محمد محمود عبداللاه", group: "A2" },
+      { id: "11078", name: "اغاريد محمد محمد السيد ابراهيم", group: "A2" },
+      { id: "11079", name: "الاء احمد محمد عبد الرازق الهندي", group: "A2" },
+      { id: "11080", name: "الاء السيد احمد حسونه حميده", group: "A2" },
+      { id: "11081", name: "الاء السيد صالح ابراهيم صالح", group: "A2" },
+      { id: "11083", name: "الاء تامر كمال عبد العال", group: "A2" },
+      { id: "11084", name: "الاء عبد النبي عبدالله محمد سليمان", group: "A2" },
+      { id: "11086", name: "السيد محمد محمود محمد احمد", group: "A2" },
+      { id: "11087", name: "السيد هاني السيد على حسانين", group: "A2" },
+      { id: "11089", name: "امال محمد حسن ابراهيم عشوش", group: "A2" },
+      { id: "11097", name: "اياد وليد رضا امين شيحه", group: "A2" },
+      { id: "11112", name: "بسنت محمد السعيد سعد جادو", group: "A2" },
+      { id: "11127", name: "جنى عوض احمد السيد حسانين", group: "A2" },
+      { id: "11130", name: "جنى محمد سيد حنفي احمد", group: "A2" },
+      { id: "11135", name: "جودي احمد رفعت على عليوه", group: "A2" },
+      { id: "11145", name: "حبيبه ورداني السيد ورداني", group: "A2" },
+      { id: "11148", name: "حسن محمد حسن عبد الرسول", group: "A2" },
+      { id: "11231", name: "سما مدحت يوسف ابراهيم عيداروس", group: "A2" },
+      { id: "11270", name: "عبد الرحمن احمد جوده حسن محمد", group: "A2" },
+      { id: "11312", name: "عمر ابراهيم عبدالله ابراهيم", group: "A2" },
+      { id: "11356", name: "كنزي محمد عبد المنعم على", group: "A2" },
+      { id: "11357", name: "كنزي هاني عبد الحميد حسين عبد الرازق", group: "A2" },
+      { id: "11380", name: "محمد احمد محمد حسن محمد", group: "A2" },
+      { id: "11403", name: "محمد عادل عبدالله مصطفى احمد", group: "A2" },
+      { id: "11422", name: "محمد نبيل محمد العزازي", group: "A2" },
+      { id: "11523", name: "نور محمد سعيد على بحيري", group: "A2" },
+      { id: "11533", name: "هاجر احمد سمير عبدالنبي", group: "A2" },
+      { id: "11608", name: "احمد محمد عبد الحليم طلبه عبدالله", group: "A2" },
+      { id: "11609", name: "احمد محمد محمد عبدالحكيم عثمان", group: "A2" },
+      { id: "11610", name: "احمد محمد محمود عبد الحميد احمد", group: "A2" },
+      { id: "11611", name: "احمد هاني جوده ابراهيم محمد العطار", group: "A2" },
+      { id: "11613", name: "ادم محمد صفي الدين محمد السيد سليم", group: "A2" },
+      { id: "11614", name: "استافرو وائل ماضي زكي خليل", group: "A2" },
+      { id: "11615", name: "اشرف محمد علي سيد على متولي", group: "A2" },
+      { id: "11616", name: "السيد ابراهيم احمد نبيه ابراهيم النادي", group: "A2" },
+      { id: "11617", name: "السيد رضا محمد عبد المنعم زهران", group: "A2" },
+      { id: "11618", name: "امنيه عبد القادر محمد الخزاعي", group: "A2" },
+      { id: "11683", name: "احمد محمد رمضان سيد احمد محمد", group: "A2" },
+      { id: "11684", name: "احمد محمود سعد فهمى السيد", group: "A2" },
+
+      // --- GROUP A3 (Page 3) ---
+      { id: "11023", name: "احمد زياد محمد الشوادفى صالح محمد", group: "A3" },
+      { id: "11064", name: "اريج سمير طلعت علي", group: "A3" },
+      { id: "11082", name: "الاء الشحات احمد محمد احمد", group: "A3" },
+      { id: "11090", name: "امنيه عبد العزيز عبد المقصود عبد الحميد", group: "A3" },
+      { id: "11091", name: "اميره ابراهيم محمد ابراهيم السيد", group: "A3" },
+      { id: "11092", name: "اهله وليد مصطفى محمد بكر", group: "A3" },
+      { id: "11095", name: "اياد محمد حسن عبد الحليم عطيه", group: "A3" },
+      { id: "11098", name: "ايمان احمد اسماعيل اسماعيل محمد حسن", group: "A3" },
+      { id: "11099", name: "ايمان احمد محمد جبر عطيه", group: "A3" },
+      { id: "11100", name: "ايمان نبيل عبدالعظيم ابوزيد", group: "A3" },
+      { id: "11101", name: "ايمي احمد عبد الصمد ابراهيم عبد الرحيم الحواله", group: "A3" },
+      { id: "11103", name: "ايه تامر محمد عبد العظيم العسيلي", group: "A3" },
+      { id: "11104", name: "ايه حسينى احمد على حسن حجاج", group: "A3" },
+      { id: "11105", name: "باسل هاني عبد القادر على احمد", group: "A3" },
+      { id: "11106", name: "باسم احمد عبدالالاه محمد عبدالله", group: "A3" },
+      { id: "11107", name: "بتول محي حسن فرغل", group: "A3" },
+      { id: "11108", name: "بسمله عبد الحميد كامل احمد محمد حجازي", group: "A3" },
+      { id: "11109", name: "بسمله عبدالله احمد محمود احمد", group: "A3" },
+      { id: "11110", name: "بسنت ايمن عبد المنعم السعيد محمد", group: "A3" },
+      { id: "11111", name: "بسنت ايهاب محمد نصر نصر الجندي", group: "A3" },
+      { id: "11113", name: "بيشوي اشرف فكري يوسف", group: "A3" },
+      { id: "11114", name: "بيشوي نادي سند عزيز عياد", group: "A3" },
+      { id: "11115", name: "تامر محمد عبدالله عادل البحراوي", group: "A3" },
+      { id: "11117", name: "جاسمين انور محمد خطاب هندي", group: "A3" },
+      { id: "11118", name: "جمال عبد الناصر احمد يوسف ابراهيم", group: "A3" },
+      { id: "11119", name: "جمانه محمد احمد عبد الحكيم احمد على", group: "A3" },
+      { id: "11120", name: "جنا احمد رجب مصطفى سليمان", group: "A3" },
+      { id: "11122", name: "جنا وليد محمد لطفى عطيه عطيه كفافي", group: "A3" },
+      { id: "11123", name: "جنى احمد عبد السلام الجبالي احمد", group: "A3" },
+      { id: "11124", name: "جنى جمال عبد الناصر نصر محمد", group: "A3" },
+      { id: "11125", name: "جنى سامح محمد علي احمد سعده", group: "A3" },
+      { id: "11126", name: "جنى شريف حسين عبد الرحمن ابراهيم", group: "A3" },
+      { id: "11128", name: "جنى محمد ابراهيم محمد عبد اللطيف", group: "A3" },
+      { id: "11129", name: "جنى محمد جوده ابراهيم على ستوت", group: "A3" },
+      { id: "11131", name: "جنى مصطفى محمود الكيلاني", group: "A3" },
+      { id: "11132", name: "جنى هاني محمد شوقي", group: "A3" },
+      { id: "11133", name: "جنى هشام رضوان عبد العزيز رضوان", group: "A3" },
+      { id: "11134", name: "جني وائل محمد عيسى", group: "A3" },
+      { id: "11136", name: "جودي تامر عبد الحفيظ حسين علي حمزه", group: "A3" },
+      { id: "11137", name: "جودي عادل اسامه اسماعيل", group: "A3" },
+      { id: "11138", name: "جورج القس انطونيوس شوهدي سيدهم ميخائيل", group: "A3" },
+      { id: "11139", name: "جومانا حمدي على البيه", group: "A3" },
+      { id: "11140", name: "حازم عبدالوهاب محمد ابوزيد", group: "A3" },
+      { id: "11141", name: "حازم عصام محمد علي السيد جاويش", group: "A3" },
+      { id: "11142", name: "حبيبه احمد ابراهيم محمد غزالي", group: "A3" },
+      { id: "11143", name: "حبيبه ايمن محمد عبد العزيز حسن", group: "A3" },
+      { id: "11144", name: "حبيبه هيثم محمد احمد عبد العزيز", group: "A3" },
+      { id: "11147", name: "حسن عبد العزيز حسن سليم داؤد", group: "A3" },
+      { id: "11163", name: "دعاء علاء الدين احمد محمد فرج", group: "A3" },
+      { id: "11188", name: "ريماس محمد حسب الله زغلول حسين", group: "A3" },
+      { id: "11223", name: "سلمى محمد عبد المنعم محمد لطفى محمد", group: "A3" },
+      { id: "11235", name: "سهير نجيب محمد خليل", group: "A3" },
+      { id: "11528", name: "نورسين هيثم محمد ابوهاشم محمد", group: "A3" },
+      { id: "11620", name: "تركي محمد صالح عاشور", group: "A3" },
+      { id: "11621", name: "تسنيم خميس محمود حسانين محمد علي", group: "A3" },
+      { id: "11622", name: "حمزه محمود السيد حسين بكر", group: "A3" },
+      { id: "11630", name: "عبد الرحمن خميس محمود حسانين", group: "A3" },
+      { id: "11634", name: "عبد العزيز محمد عبد العزيز محمود احمد", group: "A3" },
+      { id: "11651", name: "محمد شريف حسن سليمان", group: "A3" },
+      { id: "11666", name: "مصطفى عادل السيد غريب", group: "A3" },
+      { id: "11674", name: "هينار شريف على محمد على", group: "A3" },
+
+      // --- GROUP B1 (Page 4) ---
+      { id: "11051", name: "احمد محمد محمد سالم صباح", group: "B1" },
+      { id: "11063", name: "اروي هاني سميح بيومي ابراهيم", group: "B1" },
+      { id: "11146", name: "حسام الدين طه جاد عبد الحميد", group: "B1" },
+      { id: "11149", name: "حسن محمد حسن عبدالرؤف محمد", group: "B1" },
+      { id: "11150", name: "حلا حازم عاطف امين الزعبلاوي", group: "B1" },
+      { id: "11151", name: "حمزه ايمن شعبان يوسف مجاور", group: "B1" },
+      { id: "11152", name: "حمزه عماد فتحي عبد الرحمن البوهي", group: "B1" },
+      { id: "11153", name: "حمزه نانس عادل السيد السيد", group: "B1" },
+      { id: "11154", name: "حنين احمد امين محمد بسيوني", group: "B1" },
+      { id: "11155", name: "حنين حسين السيد محمد السيد", group: "B1" },
+      { id: "11156", name: "حنين سلامه عبد السميع عبد المنعم", group: "B1" },
+      { id: "11157", name: "حنين محمد على الدين احمد رزق", group: "B1" },
+      { id: "11158", name: "حنين هاني سالم مرسى سالم", group: "B1" },
+      { id: "11159", name: "خالد جمال محمد حسين سليمان", group: "B1" },
+      { id: "11160", name: "خالد عبد الله السيد زكي", group: "B1" },
+      { id: "11161", name: "خالد عصام عبد السلام كمال عبد الحميد", group: "B1" },
+      { id: "11162", name: "خديجه حسام الدين على الواعي", group: "B1" },
+      { id: "11164", name: "دينا رجب السيد محمد محمد الشربيني", group: "B1" },
+      { id: "11165", name: "رحمه محمود محمد عبد الرحمن عبدالله", group: "B1" },
+      { id: "11166", name: "رضا السيد رضا مصطفى محمد", group: "B1" },
+      { id: "11167", name: "رغد محمد السيد الخطيب", group: "B1" },
+      { id: "11168", name: "رغد محمد سليمان عمر عوض حلوه", group: "B1" },
+      { id: "11169", name: "رقيه سعيد فوزي السيد على", group: "B1" },
+      { id: "11170", name: "رقيه عبد الفتاح السيد جوده على جادو", group: "B1" },
+      { id: "11171", name: "رنا اسلام عبدالله فرج", group: "B1" },
+      { id: "11172", name: "رناد ايمن عبد المنعم ابراهيم", group: "B1" },
+      { id: "11173", name: "رناد رضا الحسيني محمد سعيد", group: "B1" },
+      { id: "11174", name: "رهف احمد توفيق اسماعيل", group: "B1" },
+      { id: "11175", name: "روان احمد محمد الهادي خشبه", group: "B1" },
+      { id: "11176", name: "روان فؤاد جمال عبد الحميد محمد", group: "B1" },
+      { id: "11178", name: "روضه محمد السيد عبدالله اسماعيل", group: "B1" },
+      { id: "11179", name: "روى احمد رجب درويش ابو طبيخ", group: "B1" },
+      { id: "11180", name: "رؤي محمد خليل ابراهيم محمد", group: "B1" },
+      { id: "11181", name: "ريبيكا روماني سعد الله شنوده عيسى", group: "B1" },
+      { id: "11182", name: "ريم احمد احمد عبد السميع احمد", group: "B1" },
+      { id: "11183", name: "ريم حامد عبد العاطي بدوي ابراهيم", group: "B1" },
+      { id: "11184", name: "ريم محمد حسين شوقي نصار", group: "B1" },
+      { id: "11185", name: "ريم محمد فتحي جمعه", group: "B1" },
+      { id: "11186", name: "ريم محمود صالح عبدالجواد عبيد", group: "B1" },
+      { id: "11187", name: "ريماس صلاح احمد محمد محمد النبوي", group: "B1" },
+      { id: "11189", name: "ريمون رفيق جميل عزيز", group: "B1" },
+      { id: "11190", name: "ريناد ضياء محمد بيومي", group: "B1" },
+      { id: "11191", name: "ريناد وصفى احمد عبد الحميد قناوي", group: "B1" },
+      { id: "11192", name: "زهراء محمد حمدان ابراهيم على", group: "B1" },
+      { id: "11194", name: "زياد اسامه صلاح شحاته", group: "B1" },
+      { id: "11195", name: "زياد السيد توفيق السيد متولى", group: "B1" },
+      { id: "11239", name: "سيف عمرو محمد ابراهيم الصيفي", group: "B1" },
+      { id: "11358", name: "لارا احمد ابراهيم السيد ابراهيم", group: "B1" },
+      { id: "11420", name: "محمد مصطفى جميل عيسى على الهباب", group: "B1" },
+      { id: "11442", name: "مروان محمد عبدالله محمدي عسله", group: "B1" },
+      { id: "11452", name: "مريم حسين فاروق امين الموافى", group: "B1" },
+      { id: "11524", name: "نور ياسر السيد على منصور", group: "B1" },
+      { id: "11544", name: "هدي خالد احمد شوقي عبدالله", group: "B1" },
+      { id: "11623", name: "حنين محمود ابراهيم الباز السيد", group: "B1" },
+      { id: "11624", name: "راكان عمرو فوزي الشحات", group: "B1" },
+      { id: "11625", name: "روان ابراهيم السيد رضوان سيد احمد", group: "B1" },
+
+      // --- GROUP B2 (Page 5) ---
+      { id: "11021", name: "احمد حمدي السعيد الطنطاوي سليم", group: "B2" },
+      { id: "11102", name: "ايه احمد حسن الصادق محمد حسين", group: "B2" },
+      { id: "11116", name: "تقوي محمد يحيى الجوهري متولى", group: "B2" },
+      { id: "11177", name: "روان محمد محمود محمد عبد المجيد", group: "B2" },
+      { id: "11197", name: "زياد على لطفى محمد", group: "B2" },
+      { id: "11198", name: "زياد محمد حجازي محمد غزه", group: "B2" },
+      { id: "11199", name: "زياد محمد حسن حسن الصعيدي", group: "B2" },
+      { id: "11200", name: "زياد محمود محمد محمد المحمودي سنجر", group: "B2" },
+      { id: "11201", name: "زياد نبيل عبدالعال مجاهد شلح", group: "B2" },
+      { id: "11202", name: "زينه محمد سعيد ابراهيم", group: "B2" },
+      { id: "11203", name: "ساره بشير محمد محمد مصطفى", group: "B2" },
+      { id: "11204", name: "ساره صبحي جابر على ابوزيد البطاوي", group: "B2" },
+      { id: "11205", name: "ساره عباس عبد المنعم لطفى المساح", group: "B2" },
+      { id: "11206", name: "ساندرا احمد صفوت شحاته امين", group: "B2" },
+      { id: "11207", name: "ساندي حسام محمد حسن نعمه", group: "B2" },
+      { id: "11210", name: "سعيد احمد بنداري امين احمد", group: "B2" },
+      { id: "11211", name: "سلمى احمد عبدالعال عبد الكريم يوسف", group: "B2" },
+      { id: "11212", name: "سلمى احمد محمد احمد سيد احمد", group: "B2" },
+      { id: "11213", name: "سلمي احمد منسي ابراهيم بدوي", group: "B2" },
+      { id: "11214", name: "سلمى حاتم عبده السيد عبده", group: "B2" },
+      { id: "11215", name: "سلمى حسام السيد سعيد", group: "B2" },
+      { id: "11216", name: "سلمى حسين محمد حسين محمد حافظ", group: "B2" },
+      { id: "11217", name: "سلمي سعيد نبيه حسب عبد الحميد", group: "B2" },
+      { id: "11218", name: "سلمى ضياء محمد السيد يوسف", group: "B2" },
+      { id: "11219", name: "سلمى عبداللطيف محمد عبد اللطيف الزغبي", group: "B2" },
+      { id: "11220", name: "سلمى عصام محمد طلبه النوام", group: "B2" },
+      { id: "11221", name: "سلمى علاء حمدي امين عبد المطلب", group: "B2" },
+      { id: "11222", name: "سلمى محمد عبدالله الشرقاوي محمد", group: "B2" },
+      { id: "11224", name: "سلمى محمد فتحي كامل عبد المعطى", group: "B2" },
+      { id: "11225", name: "سلمى هشام عبدالسلام منصور السيد", group: "B2" },
+      { id: "11226", name: "سلمى يسري رزق متولى رزق", group: "B2" },
+      { id: "11227", name: "سلوي مصطفى رمضان محمد احمد على بدوي", group: "B2" },
+      { id: "11228", name: "سما السيد صلاح السيد ابراهيم", group: "B2" },
+      { id: "11229", name: "سما طارق منصور محمود عبد السلام", group: "B2" },
+      { id: "11230", name: "سما محمد محمد الشافعي متولي عبد المنعم", group: "B2" },
+      { id: "11232", name: "سماء محمد حسن السيد", group: "B2" },
+      { id: "11233", name: "سهام احمد محمود شكري عبد القوي محمد", group: "B2" },
+      { id: "11234", name: "سهام السعيد شفيق ابراهيم محمد", group: "B2" },
+      { id: "11236", name: "سهيله احمد عبد العزيز الكاشف", group: "B2" },
+      { id: "11237", name: "سيد ابراهيم سيد صديق", group: "B2" },
+      { id: "11240", name: "سيف محمد محمد عليوه المسلمي", group: "B2" },
+      { id: "11241", name: "سيف محمد محمد عليوه عوض الله", group: "B2" },
+      { id: "11242", name: "سيف هاني السيد عليمي", group: "B2" },
+      { id: "11243", name: "شاكر محمد شاكر الفيشاوي", group: "B2" },
+      { id: "11245", name: "شذا محمد سعيد فرماوي الشاذلي", group: "B2" },
+      { id: "11246", name: "شذي اكرم محمد السيد حسن", group: "B2" },
+      { id: "11248", name: "شروق السيد محمد السيد فريد", group: "B2" },
+      { id: "11249", name: "شروق محمد محمد عبد العزيز محمد", group: "B2" },
+      { id: "11250", name: "شروق محمود سمير محمد الحماره", group: "B2" },
+      { id: "11251", name: "شمس محمد محمود محمد", group: "B2" },
+      { id: "11252", name: "شهد ابراهيم السيد ابراهيم على", group: "B2" },
+      { id: "11263", name: "عائشه عمرو رضا محمد محمود السيد", group: "B2" },
+      { id: "11363", name: "مارين تامر مسلم ابراهيم ابراهيم", group: "B2" },
+      { id: "11397", name: "محمد رشدي سالم محمد عبد العال", group: "B2" },
+      { id: "11458", name: "مريم عصام نجيب محمد جلبه", group: "B2" },
+      { id: "11627", name: "سما عبدالله محمد صديق علي", group: "B2" },
+      { id: "11686", name: "طارق سامي احمد محمود", group: "B2" },
+
+      // --- GROUP B3 (Page 6) ---
+      { id: "11034", name: "احمد عبد الحميد الشوادفى عبد الحميد عبد الرحمن", group: "B3" },
+      { id: "11037", name: "احمد عبد المنعم سليمان محمد سليمان", group: "B3" },
+      { id: "11208", name: "ساندي خالد صلاح الدين عبد القادر سعد", group: "B3" },
+      { id: "11247", name: "شذي محمد لطفى شعبان العوضي", group: "B3" },
+      { id: "11253", name: "شهد السيد عباس محمد احمد محمد", group: "B3" },
+      { id: "11254", name: "شهد عمرو السيد محمد حسن", group: "B3" },
+      { id: "11255", name: "شيرين شريف فاروق حسن ابراهيم", group: "B3" },
+      { id: "11256", name: "صامويل وائل وصفى ذكي عبادي", group: "B3" },
+      { id: "11257", name: "صفاء محسن عبد اللطيف عبد الحميد جاد الحق", group: "B3" },
+      { id: "11259", name: "صهيب احمد عابدين عبد الرحمن عابدين", group: "B3" },
+      { id: "11260", name: "صهيب محمود السيد على مجاهد", group: "B3" },
+      { id: "11261", name: "ضحى عاطف شحته احمد محمد", group: "B3" },
+      { id: "11264", name: "عائشه محمد احمد نجاتي", group: "B3" },
+      { id: "11265", name: "عاصم السيد سعد عبد البصير سعد", group: "B3" },
+      { id: "11266", name: "عاليه محمد هاشم محمد", group: "B3" },
+      { id: "11267", name: "عبد الحميد احمد محمد عبد الحميد على", group: "B3" },
+      { id: "11269", name: "عبد الرحمن ابراهيم محمد اسماعيل منصور", group: "B3" },
+      { id: "11271", name: "عبد الرحمن احمد محمد عبد المطلب حسيني", group: "B3" },
+      { id: "11272", name: "عبد الرحمن رجب عبدالمولى عبد الصمد عشيبه", group: "B3" },
+      { id: "11273", name: "عبد الرحمن رضا محمد السيد محمد", group: "B3" },
+      { id: "11274", name: "عبد الرحمن رضا محمد محمد محمود", group: "B3" },
+      { id: "11275", name: "عبدالرحمن سامي ابراهيم بخيت", group: "B3" },
+      { id: "11276", name: "عبد الرحمن سعد حلمي احمد عمر", group: "B3" },
+      { id: "11277", name: "عبد الرحمن عادل سالم عيد عوده", group: "B3" },
+      { id: "11278", name: "عبد الرحمن عصام محمد السيد فوده", group: "B3" },
+      { id: "11279", name: "عبد الرحمن عماد محمد محمد محمود ابوالنور", group: "B3" },
+      { id: "11280", name: "عبد الرحمن عمر على حمام", group: "B3" },
+      { id: "11282", name: "عبد الرحمن محسن احمد احمد عبد الفتاح", group: "B3" },
+      { id: "11283", name: "عبد الرحمن محمد شوقى على حسين", group: "B3" },
+      { id: "11284", name: "عبد الرحمن محمد قطب فرج قطب", group: "B3" },
+      { id: "11285", name: "عبدالرحمن محمد نجاح احمد شاهين", group: "B3" },
+      { id: "11286", name: "عبد الرحمن محمود احمد سعيد محمد عبد الكريم", group: "B3" },
+      { id: "11287", name: "عبدالرحمن هاني على سلطان", group: "B3" },
+      { id: "11288", name: "عبد الرحمن وليد محى الدين محمد عبدالله", group: "B3" },
+      { id: "11289", name: "عبد السلام حسن عبد السلام شكري عبد العال", group: "B3" },
+      { id: "11290", name: "عبد العزيز علاء عبد العزيز السيد خطاب", group: "B3" },
+      { id: "11291", name: "عبدالله احمد حسن السيد صقر", group: "B3" },
+      { id: "11292", name: "عبدالله اسامه محمد محمد الصبروت", group: "B3" },
+      { id: "11293", name: "عبدالله ايمن شعبان نصار", group: "B3" },
+      { id: "11294", name: "عبدالله سعد فهمى سليم الشعراوي", group: "B3" },
+      { id: "11295", name: "عبدالله عادل رجب احمد ابو العنين", group: "B3" },
+      { id: "11296", name: "عبدالله محمد ابراهيم حسين ابراهيم", group: "B3" },
+      { id: "11297", name: "عبدالمحسن احمد عبد المحسن الهلالي", group: "B3" },
+      { id: "11298", name: "عبد المنعم اشرف محمد صابر مصطفى محمد", group: "B3" },
+      { id: "11299", name: "عبد المنعم محمد عبد المنعم احمد اسماعيل", group: "B3" },
+      { id: "11317", name: "عمر حاتم صابر ابراهيم محمد اسماعيل", group: "B3" },
+      { id: "11319", name: "عمر حسن فكري ابراهيم السيد", group: "B3" },
+      { id: "11402", name: "محمد صلاح محمد احمد السبع", group: "B3" },
+      { id: "11454", name: "مريم شريف محمد حسنى مكين", group: "B3" },
+      { id: "11504", name: "مهند عبدالله راغب على عبدالله", group: "B3" },
+      { id: "11549", name: "همس محمد صفوان عبدالوهاب حمزه", group: "B3" },
+      { id: "11619", name: "بسمله احمد عمران دسوقي محمد", group: "B3" },
+      { id: "11628", name: "عائشه احمد صديق احمد", group: "B3" },
+      { id: "11629", name: "عبد الرحمن بشير عبدالله حسن معوض", group: "B3" },
+      { id: "11631", name: "عبد الرحمن محمد عبده محمد سلامه", group: "B3" },
+      { id: "11632", name: "عبد الرحمن محمود صلاح الدين صادق عباس", group: "B3" },
+      { id: "11635", name: "عبدالله محمد عبد الله طه المندراوي", group: "B3" },
+      { id: "11685", name: "صبري محمد صبري فرغل", group: "B3" },
+
+      // --- GROUP C1 (Page 7) ---
+      { id: "11004", name: "ابراهيم محمد احمد سعيد ابراهيم", group: "C1" },
+      { id: "11005", name: "ابراهيم محمد السيد احمد", group: "C1" },
+      { id: "11049", name: "احمد محمد عبد الفتاح طنطاوي محمد", group: "C1" },
+      { id: "11071", name: "اسلام مصطفى محمد توفيق المسلمى", group: "C1" },
+      { id: "11075", name: "اسماعيل عبد الفتاح احمد على ابراهيم", group: "C1" },
+      { id: "11085", name: "الاء مجدي محمد على عبد المعطى محمد", group: "C1" },
+      { id: "11096", name: "اياد محمد رمضان محمد يوسف", group: "C1" },
+      { id: "11244", name: "شاهستا مؤمن محمد خضري اسماعيل", group: "C1" },
+      { id: "11300", name: "عبد المنعم محمد محمد محمد اليماني", group: "C1" },
+      { id: "11301", name: "عبير عبد الحميد عبد الحليم على على", group: "C1" },
+      { id: "11303", name: "عفاف سامح عبد القادر رياض رضوان", group: "C1" },
+      { id: "11304", name: "علاء محمد ابراهيم على على", group: "C1" },
+      { id: "11305", name: "علاء محمد عبد المطلب محمد منصور", group: "C1" },
+      { id: "11306", name: "علي السيد علي السيد محمد", group: "C1" },
+      { id: "11308", name: "علي حماد علي حماد محمد", group: "C1" },
+      { id: "11310", name: "على عبد الحليم محمود محمد العوضي", group: "C1" },
+      { id: "11311", name: "على محمد علي ابراهيم متولي حجاج", group: "C1" },
+      { id: "11314", name: "عمر اكمل راشد حسن محمد", group: "C1" },
+      { id: "11315", name: "عمر امام احمد الدسوقى يوسف", group: "C1" },
+      { id: "11318", name: "عمر حسام السيد عبد العزيز فارس", group: "C1" },
+      { id: "11320", name: "عمر حماده نصر ابراهيم", group: "C1" },
+      { id: "11321", name: "عمر سامح السيد محمد عزب", group: "C1" },
+      { id: "11322", name: "عمر شعبان كامل عبد السلام", group: "C1" },
+      { id: "11323", name: "عمر عاطف مهدي محمد عبد الكريم", group: "C1" },
+      { id: "11325", name: "عمر ماهر ابراهيم عبد الحفيظ بريك", group: "C1" },
+      { id: "11326", name: "عمر محمد ادريس السيد حسين", group: "C1" },
+      { id: "11327", name: "عمر محمد شحات محمد ابو سالم", group: "C1" },
+      { id: "11330", name: "عمر هاني محمد عبد السلام منصور", group: "C1" },
+      { id: "11331", name: "عمرو ابراهيم محمد خليل احمد", group: "C1" },
+      { id: "11332", name: "عمرو السيد حسن جوده محمد", group: "C1" },
+      { id: "11333", name: "عمرو صلاح عبد العال عبدالغني", group: "C1" },
+      { id: "11334", name: "عمرو عبد العزيز عبد الرحمن احمد محمد محمد الشرقاوي", group: "C1" },
+      { id: "11335", name: "غاده اسامه عبدالله زكى عبدالله", group: "C1" },
+      { id: "11336", name: "فاتن محمود عبد الرحمن محمود محمد", group: "C1" },
+      { id: "11337", name: "فارس محمد سالم سليمان سليم", group: "C1" },
+      { id: "11338", name: "فارس محمد محمد عكاشه محمد", group: "C1" },
+      { id: "11339", name: "فاطمه الزهراء محمد ابراهيم محمد الانور", group: "C1" },
+      { id: "11340", name: "فاطمه عماد محمد اسماعيل سليمان", group: "C1" },
+      { id: "11341", name: "فتحي محمد فتحي ابراهيم السيد منصور", group: "C1" },
+      { id: "11342", name: "فرح ياسر محمد نيازي عبدالله محروس", group: "C1" },
+      { id: "11344", name: "فهد احمد عبدالعال امين عبد المقصود", group: "C1" },
+      { id: "11345", name: "فيفي ياسر حسن على محمد ابراهيم الخشنيه", group: "C1" },
+      { id: "11346", name: "قمر شادي محمد فريد حجاج", group: "C1" },
+      { id: "11347", name: "كادي ابراهيم محمد السيد", group: "C1" },
+      { id: "11348", name: "كريم احمد محمد رفاعي مصطفى", group: "C1" },
+      { id: "11368", name: "محمد ابراهيم سلام ابراهيم احمد سالم", group: "C1" },
+      { id: "11378", name: "محمد احمد محمد الصادق محمد عبدالعال", group: "C1" },
+      { id: "11401", name: "محمد صلاح عبد الحميد جاد ابراهيم", group: "C1" },
+      { id: "11415", name: "محمد فوزي حسانين عزاز محمد", group: "C1" },
+      { id: "11427", name: "محمد هشام زكى السيد احمد", group: "C1" },
+      { id: "11445", name: "مريم احمد محمد امين بكري", group: "C1" },
+      { id: "11556", name: "هنا محمد عطوه ابراهيم", group: "C1" },
+      { id: "11637", name: "عمار محمد مصطفى محمد موسى", group: "C1" },
+      { id: "11638", name: "عمر ايهاب السيد الدسوقى محمد اسماعيل", group: "C1" },
+      { id: "11639", name: "عمر محمد محمد سامي محمد شقير", group: "C1" },
+      { id: "11640", name: "عمر هاني ابراهيم ابراهيم موسى", group: "C1" },
+      { id: "11641", name: "فارس مصطفى رجب رمضان محمد", group: "C1" },
+      { id: "11642", name: "فايز وهبه حلمي وهبه", group: "C1" },
+
+      // --- GROUP C2 (Page 8) ---
+      { id: "11088", name: "المعتصم بالله محمد محمد احمد على", group: "C2" },
+      { id: "11193", name: "زياد احمد محمد محمد البرعي", group: "C2" },
+      { id: "11313", name: "عمر احمد محمد محمد الصاوي", group: "C2" },
+      { id: "11328", name: "عمر محمد صلاح الدين محمد عويضه", group: "C2" },
+      { id: "11349", name: "كريم عبد الحميد شحاته عبد الحميد انور", group: "C2" },
+      { id: "11350", name: "كريم مبروك عوض طلبه احمد", group: "C2" },
+      { id: "11351", name: "كريم محمد ابراهيم السيد بغيض بويدان", group: "C2" },
+      { id: "11352", name: "كريم محمد السيد مرسى عبد العزيز", group: "C2" },
+      { id: "11354", name: "كريم محمد نجيب فريد مرسى", group: "C2" },
+      { id: "11355", name: "كمال محمد كمال احمد", group: "C2" },
+      { id: "11360", name: "لؤي هيثم جمال الدين طير البر", group: "C2" },
+      { id: "11361", name: "ماجد حمزه محمد احمد محمد", group: "C2" },
+      { id: "11364", name: "مازن سامح السيد محمد سيد احمد", group: "C2" },
+      { id: "11365", name: "مازن عبد الله محمد الهادي عبد المعطى عوض الله", group: "C2" },
+      { id: "11366", name: "مجدي محمد مختار محمد حسن", group: "C2" },
+      { id: "11369", name: "محمد ابراهيم فؤاد محمود", group: "C2" },
+      { id: "11370", name: "محمد ابراهيم ناجي ابراهيم عبدالله", group: "C2" },
+      { id: "11371", name: "محمد احمد السيد حسن عبدالله", group: "C2" },
+      { id: "11372", name: "محمد احمد السيد محمد حسين جدوع", group: "C2" },
+      { id: "11373", name: "محمد احمد حسن عبد الخالق التلباني", group: "C2" },
+      { id: "11374", name: "محمد احمد سيد احمد القصاص", group: "C2" },
+      { id: "11375", name: "محمد احمد عبد الحميد المنسى الطنطاوي", group: "C2" },
+      { id: "11376", name: "محمد احمد عبده حسنين حسين", group: "C2" },
+      { id: "11377", name: "محمد احمد محمد السيد محمد حسن", group: "C2" },
+      { id: "11379", name: "محمد احمد محمد امين امين المسيري", group: "C2" },
+      { id: "11381", name: "محمد احمد منصور عبدالرحمن فرحان", group: "C2" },
+      { id: "11382", name: "محمد اسامه السيد محمد حسين", group: "C2" },
+      { id: "11383", name: "محمد اشرف السيد محمد حسن", group: "C2" },
+      { id: "11384", name: "محمد اشرف محمد حسن على", group: "C2" },
+      { id: "11385", name: "محمد اشرف محمد عثمان احمد اسماعيل", group: "C2" },
+      { id: "11386", name: "محمد السيد ابراهيم عدلى السيد", group: "C2" },
+      { id: "11387", name: "محمد السيد محمد السيد ابراهيم", group: "C2" },
+      { id: "11388", name: "محمد السيد محمد عبدالامام مهران", group: "C2" },
+      { id: "11389", name: "محمد امير السيد على العطوي", group: "C2" },
+      { id: "11390", name: "محمد ايمن محمد محمد حسين", group: "C2" },
+      { id: "11391", name: "محمد ايهاب لطفى عمر عبد القادر", group: "C2" },
+      { id: "11392", name: "محمد تامر محمد عزت عبدالعزيز محمد", group: "C2" },
+      { id: "11393", name: "محمد جوده السيد محمد", group: "C2" },
+      { id: "11394", name: "محمد خالد حنفي ابراهيم عجمي عش", group: "C2" },
+      { id: "11395", name: "محمد خالد محمد عبد العظيم يوسف", group: "C2" },
+      { id: "11396", name: "محمد خير الله محمد عبدالله نمير", group: "C2" },
+      { id: "11433", name: "محمود احمد محمد وحيد الدين", group: "C2" },
+      { id: "11644", name: "كنزي محمد صلاح عبد الرحمن ابو عرب", group: "C2" },
+      { id: "11645", name: "لؤي عبد الستار عبد العظيم اسماعيل", group: "C2" },
+      { id: "11646", name: "مازن ايمن عبد المنعم محمد ابو عبيه", group: "C2" },
+      { id: "11647", name: "مازن فائز سعيد الزهراني", group: "C2" },
+      { id: "11648", name: "مازن محمد انور رشاد احمد معروف", group: "C2" },
+      { id: "11649", name: "محمد احمد محمود ابراهيم", group: "C2" },
+      { id: "11650", name: "محمد جوده السيد اسماعيل السيد", group: "C2" },
+      { id: "11691", name: "ادم تامر عبد المنعم احمد ابراهيم حجاج", group: "C2" },
+      { id: "11692", name: "البراء عبد المنعم فهيم فوده نعيم", group: "C2" },
+      { id: "11693", name: "بسنت رجب عبد الجواد الصاحي", group: "C2" },
+      { id: "11696", name: "نادر محمد عنتر محمد مسلم", group: "C2" },
+
+      // --- GROUP C3 (Page 9) ---
+      { id: "11017", name: "احمد جمال الدين هريسه", group: "C3" },
+      { id: "11094", name: "اياد محمد جبر احمد شحات", group: "C3" },
+      { id: "11281", name: "عبد الرحمن فتحي محمد العراقي فتحي محمد", group: "C3" },
+      { id: "11307", name: "على السيد على سليمان حنفي سالم", group: "C3" },
+      { id: "11329", name: "عمر محمد محمد عبدالله", group: "C3" },
+      { id: "11362", name: "مارولين روفائيل سليمان روفائيل سليمان", group: "C3" },
+      { id: "11367", name: "محمد ابراهيم حمدي ابراهيم اسماعيل", group: "C3" },
+      { id: "11398", name: "محمد رضا محمد محمد ابوالليل", group: "C3" },
+      { id: "11399", name: "محمد شريف احمد عبد العزيز الشناوي", group: "C3" },
+      { id: "11400", name: "محمد صالح احمد صالح الطنطاوي", group: "C3" },
+      { id: "11404", name: "محمد عامر عوض الله عامر سليم", group: "C3" },
+      { id: "11405", name: "محمد عبد الباسط حسنى عبد الباسط شحاته", group: "C3" },
+      { id: "11406", name: "محمد عبدالله محمد على على", group: "C3" },
+      { id: "11407", name: "محمد عبد المنعم ادريس عبد الحميد احمد", group: "C3" },
+      { id: "11408", name: "محمد علاء السيد حسين حسن", group: "C3" },
+      { id: "11409", name: "محمد علاء حسب الله حبيب", group: "C3" },
+      { id: "11410", name: "محمد عماد سليمان محمد سليمان", group: "C3" },
+      { id: "11411", name: "محمد عماد عبد الغفار عبد الهادي عبد الغفار", group: "C3" },
+      { id: "11412", name: "محمد عمرو فايز مصطفى كشك", group: "C3" },
+      { id: "11413", name: "محمد عمرو محمد الانور على عمره", group: "C3" },
+      { id: "11414", name: "محمد عيد صقر امين بركات", group: "C3" },
+      { id: "11416", name: "محمد كريم جمال محمد غنيم", group: "C3" },
+      { id: "11417", name: "محمد متولي محمد متولي السيد", group: "C3" },
+      { id: "11418", name: "محمد مجدي جمال الدين امين محمد خميس", group: "C3" },
+      { id: "11419", name: "محمد محمود رافت احمد طه", group: "C3" },
+      { id: "11421", name: "محمد ممدوح عبد العال فتحي عبد العال", group: "C3" },
+      { id: "11423", name: "محمد هاني السيد عبد المجيد عبد الرحمن", group: "C3" },
+      { id: "11424", name: "محمد هاني سالم محمد التهامي", group: "C3" },
+      { id: "11425", name: "محمد هاني محمد ابراهيم محمد", group: "C3" },
+      { id: "11426", name: "محمد هاني مختار محمد", group: "C3" },
+      { id: "11428", name: "محمد وجيه عبد الرحمن يوسف اسماعيل", group: "C3" },
+      { id: "11429", name: "محمد وليد عبده اسماعيل محمدي", group: "C3" },
+      { id: "11430", name: "محمد ياسر محمد احمد محمد", group: "C3" },
+      { id: "11431", name: "محمود ابراهيم حمدي رفاعي فرج", group: "C3" },
+      { id: "11432", name: "محمود احمد محمد احمد قانوع", group: "C3" },
+      { id: "11435", name: "محمود محمد احمد البحيري", group: "C3" },
+      { id: "11436", name: "محمود محمد السيد سلام", group: "C3" },
+      { id: "11437", name: "محمود محمد بخيت محمد اسماعيل", group: "C3" },
+      { id: "11438", name: "محمود محمد حسين محمد الخولي", group: "C3" },
+      { id: "11440", name: "مروان سامي محمد عامر مصطفى", group: "C3" },
+      { id: "11441", name: "مروان محمد اسماعيل غريب", group: "C3" },
+      { id: "11443", name: "مريم احمد عبد المجيد عقل", group: "C3" },
+      { id: "11643", name: "كريم اشرف ابراهيم على وفا", group: "C3" },
+      { id: "11652", name: "محمد عادل عطيه احمد عطيه", group: "C3" },
+      { id: "11653", name: "محمد عبد المحسن محمد محمد احمد", group: "C3" },
+      { id: "11654", name: "محمد عماد عبد الجواد محمد عبده", group: "C3" },
+      { id: "11655", name: "محمد محمد احمد عبد الرازق محمد", group: "C3" },
+      { id: "11656", name: "محمد محمد عبد الهادي محمد", group: "C3" },
+      { id: "11657", name: "محمد محمود عبد العزيز احمد عبد الرحمن", group: "C3" },
+      { id: "11658", name: "محمد مصطفى محمود عبد العظيم زاهر", group: "C3" },
+      { id: "11659", name: "محمد منصور محمد السيد عبد المنعم", group: "C3" },
+      { id: "11660", name: "محمود احمد حلمي بكري راشد", group: "C3" },
+      { id: "11661", name: "محمود اسامه الغياتي كامل لاشين", group: "C3" },
+      { id: "11662", name: "محمود محمد محمود محمد جندل", group: "C3" },
+      { id: "11663", name: "محمود نور الدين بدر عبدالبر نور الدين", group: "C3" },
+      { id: "11688", name: "محمود محمد محمود محمد عبد الرحمن درهوس", group: "C3" },
+      { id: "11689", name: "محمود نصر عبد العزيز عبد الفتاح نصر", group: "C3" },
+
+      // --- GROUP D1 (Page 10) ---
+      { id: "11121", name: "جنا احمد محمد طلبه رمضان", group: "D1" },
+      { id: "11262", name: "ضياء محمد محمود محمد العزبي", group: "D1" },
+      { id: "11324", name: "عمر عماد عطيه عبدالله ابراهيم", group: "D1" },
+      { id: "11439", name: "محمود محمد محمود سليم اسماعيل", group: "D1" },
+      { id: "11444", name: "مريم احمد فؤاد سعد الدين الاهواني", group: "D1" },
+      { id: "11446", name: "مريم احمد محمد تيمور", group: "D1" },
+      { id: "11447", name: "مريم اسلام احمد عبد المقصود حجر", group: "D1" },
+      { id: "11448", name: "مريم السيد ابراهيم سعد", group: "D1" },
+      { id: "11449", name: "مريم السيد عبدالله نسيم عثمان", group: "D1" },
+      { id: "11450", name: "مريم جمال على الدين عبد القادر راضي", group: "D1" },
+      { id: "11451", name: "مريم حسن قطب محمد حسين", group: "D1" },
+      { id: "11453", name: "مريم سمير السيد عبدالمحسن محمد", group: "D1" },
+      { id: "11455", name: "مريم طارق فتحي محمد ابراهيم", group: "D1" },
+      { id: "11456", name: "مريم عبد الرحمن احمد عبد الرحمن محمد", group: "D1" },
+      { id: "11457", name: "مريم عبد اللطيف مصطفى عبد اللطيف طه", group: "D1" },
+      { id: "11459", name: "مريم عماد السعيد محمد", group: "D1" },
+      { id: "11460", name: "مريم عمرو محمد حسب النبي يوسف", group: "D1" },
+      { id: "11461", name: "مريم كامل علي عطيه سعد محمد", group: "D1" },
+      { id: "11462", name: "مريم ماجد حسين محمد نصير", group: "D1" },
+      { id: "11463", name: "مريم محمد سعيد عبدالعال احمد", group: "D1" },
+      { id: "11464", name: "مريم محمد محمود السيد عوض", group: "D1" },
+      { id: "11465", name: "مريم محمود شحاته محمد محمد طلب", group: "D1" },
+      { id: "11466", name: "مريم محمود محمد محمود السيد احمد مبروك", group: "D1" },
+      { id: "11467", name: "مريم مصطفى حسن محمد حسن مطاوع", group: "D1" },
+      { id: "11468", name: "مريم مؤمن السيد محمد عبد الحميد السيد محمد", group: "D1" },
+      { id: "11469", name: "مريم وليد حلمي الطويل", group: "D1" },
+      { id: "11470", name: "مصطفى احمد محمد عبد الفتاح سالم", group: "D1" },
+      { id: "11473", name: "مصطفى محمد محمد احمد مصطفى", group: "D1" },
+      { id: "11474", name: "مصطفى وليد سيد محمد احمد عفيفي", group: "D1" },
+      { id: "11475", name: "معاذ اسامه عبد الواحد متولى السيد", group: "D1" },
+      { id: "11476", name: "معاذ حسن محمد حسين داود", group: "D1" },
+      { id: "11477", name: "معاذ صلاح السيد عطيه", group: "D1" },
+      { id: "11478", name: "معاذ فاروق عبد المنعم محمد سليم", group: "D1" },
+      { id: "11479", name: "معاذ محمود منصور السيد حسانين", group: "D1" },
+      { id: "11480", name: "ملك احمد السيد عثمان سليم العزوني", group: "D1" },
+      { id: "11481", name: "ملك اسلام سعيد احمد مرعي", group: "D1" },
+      { id: "11483", name: "ملك حسام مهدي عبد العزيز ميتكيس", group: "D1" },
+      { id: "11484", name: "ملك سامي محمود علي محمد", group: "D1" },
+      { id: "11485", name: "ملك عماد محمد هاشم عبد المعطى محمد", group: "D1" },
+      { id: "11486", name: "ملك عمرو عبدربه امين", group: "D1" },
+      { id: "11487", name: "ملك محمد صلاح الدين محمد بدوي", group: "D1" },
+      { id: "11489", name: "ملك محمد عطيه عبد الجواد ابراهيم", group: "D1" },
+      { id: "11490", name: "ملك ممدوح محمد السيد حماد", group: "D1" },
+      { id: "11491", name: "ملك مؤمن ابراهيم رافت محمد السيد حمد", group: "D1" },
+      { id: "11492", name: "ملك وليد فتحي السعيد", group: "D1" },
+      { id: "11493", name: "منه ابراهيم احمد حلمي محمود", group: "D1" },
+      { id: "11494", name: "منه السيد رضوان السيد محمد", group: "D1" },
+      { id: "11495", name: "منه الله ابراهيم محمد السيد بدره", group: "D1" },
+      { id: "11496", name: "منه الله اسامه السيد ابراهيم على", group: "D1" },
+      { id: "11503", name: "مهند عاطف فرج عبد الجليل", group: "D1" },
+      { id: "11550", name: "هنا احمد ابراهيم متولى عزب", group: "D1" },
+      { id: "11571", name: "يحيى ياسر يحيى عبد اللطيف وافي", group: "D1" },
+      { id: "11578", name: "يوسف احمد محمد عليوه", group: "D1" },
+      { id: "11664", name: "مريم مشلب المشرف", group: "D1" },
+      { id: "11665", name: "مصطفى احمد رشاد محمد مسلم", group: "D1" },
+      { id: "11667", name: "مصطفى محمد عبدالاله محمود نجم", group: "D1" },
+      { id: "11668", name: "معاذ رضا محمد فتحي عبده احمد رمضان", group: "D1" },
+
+      // --- GROUP D2 (Page 11) ---
+      { id: "11016", name: "احمد تامر السيد محمد نافع", group: "D2" },
+      { id: "11022", name: "احمد خالد محمد السيد عرفه ابوهبه", group: "D2" },
+      { id: "11196", name: "زياد على عبد الحميد محمد مصطفى", group: "D2" },
+      { id: "11209", name: "ساندي سمير صبحى ملك", group: "D2" },
+      { id: "11302", name: "عزالدين احمد محمد علي", group: "D2" },
+      { id: "11359", name: "لانا حامد حسين محمد ثابت", group: "D2" },
+      { id: "11488", name: "ملك محمد عبد المنعم السيد عوض", group: "D2" },
+      { id: "11497", name: "منه شعبان عبد الشهيد ابو المعاطى على", group: "D2" },
+      { id: "11498", name: "منها الله محمد عزازي رجب سليمان", group: "D2" },
+      { id: "11499", name: "منى عبد الصبور السيد عبدالله احمد", group: "D2" },
+      { id: "11500", name: "مهاب احمد مصطفى عبدالمحسن", group: "D2" },
+      { id: "11501", name: "مهاب مشهور عبدالسلام هزاع ادهام", group: "D2" },
+      { id: "11502", name: "مهند حماده عبدالنبي حسين محمد", group: "D2" },
+      { id: "11505", name: "مهند هشام محمد السيد الشرقاوي", group: "D2" },
+      { id: "11506", name: "موده محمد عبد المنعم عبد السلام", group: "D2" },
+      { id: "11507", name: "مؤمن محمد حسن احمد ابوزيد", group: "D2" },
+      { id: "11508", name: "ميار ايهاب سعيد لطفى حسن", group: "D2" },
+      { id: "11509", name: "ميرنا وحيد عطيه على احمد", group: "D2" },
+      { id: "11510", name: "نانسي محمد محمد السعيد حسن", group: "D2" },
+      { id: "11511", name: "ندي احمد حسن احمد مصطفى ربيع", group: "D2" },
+      { id: "11512", name: "ندي احمد عبد الحفيظ محمد حافظ", group: "D2" },
+      { id: "11513", name: "ندي اكمل عبد العزيز حسين محمد", group: "D2" },
+      { id: "11514", name: "ندي السيد محمد اسماعيل علي", group: "D2" },
+      { id: "11515", name: "ندي ايمن جلال الدين على صالح", group: "D2" },
+      { id: "11516", name: "ندي علاء الدين احمد محمد محمد", group: "D2" },
+      { id: "11517", name: "ندي محمد حمود مهدي محمد", group: "D2" },
+      { id: "11518", name: "نسمه تامر ابراهيم محمد حسن", group: "D2" },
+      { id: "11519", name: "نور توفيق احمد امين محمد", group: "D2" },
+      { id: "11520", name: "نور حسين لطفى حسين متولى", group: "D2" },
+      { id: "11521", name: "نور عبد الرحمن عبدالله محمد عبد الرحمن", group: "D2" },
+      { id: "11522", name: "نور على عبد الرازق سيد احمد عسكر", group: "D2" },
+      { id: "11525", name: "نورالدين مصطفى محمد عطيه", group: "D2" },
+      { id: "11526", name: "نوران عبد الوهاب حسين", group: "D2" },
+      { id: "11527", name: "نوران ياسر السيد حامد محمد", group: "D2" },
+      { id: "11529", name: "نوره صلاح سعيد عبد المقصود منصور", group: "D2" },
+      { id: "11530", name: "نورهان حسين مبارك احمد حامد", group: "D2" },
+      { id: "11531", name: "نورهان هاشم السيد محمد", group: "D2" },
+      { id: "11532", name: "نيره اسماعيل السيد عبد الحليم رزق", group: "D2" },
+      { id: "11534", name: "هاجر احمد محمد عوض", group: "D2" },
+      { id: "11535", name: "هاجر فايد احمد محمد سعدالدين", group: "D2" },
+      { id: "11536", name: "هاجر وائل عبد الكريم محمد جاد الله", group: "D2" },
+      { id: "11537", name: "هادي الشربيني الراعي محمد الشربيني", group: "D2" },
+      { id: "11538", name: "هادي محمد هاشم السيد", group: "D2" },
+      { id: "11539", name: "هاله اسلام السعيد اسماعيل", group: "D2" },
+      { id: "11540", name: "هايدي وائل نبيل سليمان على", group: "D2" },
+      { id: "11541", name: "هبه ابراهيم محمد الشرقاوي محمد ابراهيم", group: "D2" },
+      { id: "11542", name: "هبه عادل عوض الله السيد عوض الله", group: "D2" },
+      { id: "11543", name: "هبه ياسر السيد منصور حسن", group: "D2" },
+      { id: "11545", name: "هدي عبدالله ابراهيم خليل", group: "D2" },
+      { id: "11546", name: "هشام حسن محمد ابراهيم عمار", group: "D2" },
+      { id: "11547", name: "هلا هشام محمد السيد ابو عبيده", group: "D2" },
+      { id: "11548", name: "همس اسامه عبد الفتاح منير", group: "D2" },
+      { id: "11626", name: "ريمي محمد عطيه محمد الصوالحي", group: "D2" },
+      { id: "11633", name: "عبد الرحمن مصطفى حسيني ابراهيم متولى", group: "D2" },
+      { id: "11669", name: "نور الدين محمد نادر عبد الغفور عبد الماجد", group: "D2" },
+      { id: "11670", name: "نور محمد محمد عبد الحليم عمار", group: "D2" },
+      { id: "11671", name: "نور هشام الدوماني مصطفى راضي", group: "D2" },
+      { id: "11672", name: "هاجر محمد احمد عبد اللطيف عبده", group: "D2" },
+      { id: "11697", name: "رحمه احمد على ابراهيم محمد سمري", group: "D2" },
+
+      // --- GROUP D3 (Page 12) ---
+      { id: "11238", name: "سيف علاء حسن وجيه محمد حباكه", group: "D3" },
+      { id: "11343", name: "فريده ياسر كمال السيد ابراهيم", group: "D3" },
+      { id: "11471", name: "مصطفى محمد ابراهيم نورالدين عطا", group: "D3" },
+      { id: "11472", name: "مصطفى محمد عدلي عطيه ابراهيم", group: "D3" },
+      { id: "11482", name: "ملك بهجت احمد عبدالله على", group: "D3" },
+      { id: "11551", name: "هنا احمد محمد طلبه رمضان", group: "D3" },
+      { id: "11552", name: "هنا احمد محمود عبد اللطيف حلمي محمود", group: "D3" },
+      { id: "11553", name: "هنا سمير خليل شبانه عتريس النجدي", group: "D3" },
+      { id: "11554", name: "هنا عزالدين محمود احمد العزازي", group: "D3" },
+      { id: "11555", name: "هنا عمرو عطا فايز بيومي", group: "D3" },
+      { id: "11557", name: "هنا محمد محمد السيد مصطفى", group: "D3" },
+      { id: "11558", name: "هنا هاني طارق بدوي على", group: "D3" },
+      { id: "11559", name: "هنا هشام محمد ربيع على", group: "D3" },
+      { id: "11560", name: "هويدا شريف مصطفى محمد خليل", group: "D3" },
+      { id: "11561", name: "وجيه محمود حمد عوض احمد", group: "D3" },
+      { id: "11562", name: "وفاء عماد محمد عبد القادر عوض", group: "D3" },
+      { id: "11563", name: "ياسمين ابراهيم العايدي محمد الشحات", group: "D3" },
+      { id: "11564", name: "ياسمين طارق عبد العزيز مرسى يوسف", group: "D3" },
+      { id: "11565", name: "ياسين احمد عبد الرحمن محمد محمد", group: "D3" },
+      { id: "11566", name: "ياسين هاني محمد محمد عبدالعال", group: "D3" },
+      { id: "11567", name: "يحيي حسين نصرالدين حسين حسن", group: "D3" },
+      { id: "11568", name: "يحيى محمد سليم النيل", group: "D3" },
+      { id: "11569", name: "يحيى محمد وهمان محمد", group: "D3" },
+      { id: "11570", name: "يحيى وحيد عليوه عبد النور على", group: "D3" },
+      { id: "11572", name: "يس تامر السيد جوده الشرقاوي", group: "D3" },
+      { id: "11573", name: "يمنى ابراهيم جوده محمد", group: "D3" },
+      { id: "11574", name: "يمنى احمد ابراهيم جلال راشد", group: "D3" },
+      { id: "11575", name: "يوسف ابراهيم سلام ابراهيم احمد سالم", group: "D3" },
+      { id: "11576", name: "يوسف احمد سامي احمد حافظ", group: "D3" },
+      { id: "11577", name: "يوسف احمد محمد عبد الغنى عيسى", group: "D3" },
+      { id: "11579", name: "يوسف اشرف محمد قطب الصادق", group: "D3" },
+      { id: "11580", name: "يوسف السيد عبد الكريم محمد عطيه", group: "D3" },
+      { id: "11581", name: "يوسف السيد عطيه ابراهيم", group: "D3" },
+      { id: "11582", name: "يوسف ايمن عبد الرحمن محمد على", group: "D3" },
+      { id: "11583", name: "يوسف حماده احمد محمد السيد", group: "D3" },
+      { id: "11584", name: "يوسف عاطف مصطفى عبدالله السيد", group: "D3" },
+      { id: "11585", name: "يوسف محمد اشرف شوقي مرسى", group: "D3" },
+      { id: "11586", name: "يوسف محمد حسنين مصطفى حماده", group: "D3" },
+      { id: "11587", name: "يوسف محمد عبد البديع موسى محمد", group: "D3" },
+      { id: "11588", name: "يوسف محمد عبد الرحمن حسن محمد", group: "D3" },
+      { id: "11589", name: "يوسف محمد عبد الفتاح احمد المصري", group: "D3" },
+      { id: "11590", name: "يوسف محمد عطيه محمود", group: "D3" },
+      { id: "11591", name: "يوسف محمود عبد السميع رشدي على احمد", group: "D3" },
+      { id: "11592", name: "يوسف محمود محمد محسن عثمان محمد", group: "D3" },
+      { id: "11593", name: "يوسف هاني شاكر على حبيب", group: "D3" },
+      { id: "11594", name: "يوسف وليد عبد الرؤف احمد", group: "D3" },
+      { id: "11595", name: "يوسف ياسر محمد محمود", group: "D3" },
+      { id: "11596", name: "يوسف يحيى السيد عبد الله يحيى", group: "D3" },
+      { id: "11673", name: "همس عبد السلام السيد عبدالعال سليمان", group: "D3" },
+      { id: "11675", name: "يحيى على عبدالله ابوالمعاطي", group: "D3" },
+      { id: "11676", name: "يوسف السيد عبد الفتاح محمد", group: "D3" },
+      { id: "11677", name: "رغد معز محمد يوسف", group: "D3" },
+      { id: "11678", name: "عمار تاج الدين", group: "D3" },
+      { id: "11679", name: "عمرو تاج الدين", group: "D3" },
+      { id: "11680", name: "محمد حيدر عبد الله قسم السيد", group: "D3" },
+      { id: "11681", name: "نور ابو شنب", group: "D3" },
+      { id: "11682", name: "احمد محمد ثروت محمد عطيه", group: "D3" },
+      { id: "11687", name: "فارس رافت عثمان سلامه", group: "D3" },
+      { id: "11690", name: "يوسف ايمن محمد عبدالله الشنواني", group: "D3" },
+      { id: "11695", name: "محمد هيثم احمد محمد السلاوي القرم", group: "D3" }
+    ];
+
+    // =========================================================================
+    // 2. SMART ARABIC TEXT NORMALIZATION & INDEXING
+    // =========================================================================
+    function normalizeArabic(text) {
+      if (!text) return "";
+      return text
+        .toString()
+        .replace(/[\u064B-\u065F\u0670\u0640]/g, "")
+        .replace(/[أإآٱ]/g, "ا")
+        .replace(/ة/g, "ه")
+        .replace(/ى/g, "ي")
+        .replace(/ؤ/g, "و")
+        .replace(/ئ/g, "ي")
+        .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+        .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    const INDEXED_STUDENTS = STUDENTS_DATA.map((student, idx) => {
+      const normName = normalizeArabic(student.name);
+      const tokens = normName.split(" ");
+      return {
+        ...student,
+        level: "المستوى الأول",
+        originalIndex: idx,
+        normName,
+        tokens,
+        normGroup: student.group.toLowerCase(),
+        numId: parseInt(student.id, 10)
+      };
+    });
+
+    // =========================================================================
+    // 3. FUZZY MATCHING & SMART SCORING ENGINE
+    // =========================================================================
+    function levenshteinDistance(a, b) {
+      if (a === b) return 0;
+      if (a.length === 0) return b.length;
+      if (b.length === 0) return a.length;
+      if (Math.abs(a.length - b.length) > 3) return 99;
+
+      const matrix = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+      for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] + cost
+          );
+          if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+            matrix[i][j] = Math.min(matrix[i][j], matrix[i - 2][j - 2] + cost);
+          }
+        }
+      }
+      return matrix[a.length][b.length];
+    }
+
+    function scoreExactOrPrefix(student, queryTokens, rawNormQuery) {
+      let totalScore = 0;
+
+      if (student.id === rawNormQuery) return 1000;
+      if (student.id.startsWith(rawNormQuery)) return 850;
+      if (student.id.includes(rawNormQuery) && rawNormQuery.length >= 2) return 700;
+      if (student.normGroup === rawNormQuery) return 650;
+
+      if (student.normName.startsWith(rawNormQuery)) {
+        totalScore += 500;
+      } else if (student.normName.includes(rawNormQuery)) {
+        totalScore += 350;
+      }
+
+      let allTokensMatched = true;
+      let tokenScoreSum = 0;
+
+      for (let qTok of queryTokens) {
+        if (student.id.includes(qTok)) {
+          tokenScoreSum += 250;
+          continue;
+        }
+        if (student.normGroup === qTok) {
+          tokenScoreSum += 200;
+          continue;
+        }
+
+        let bestTokScore = 0;
+        for (let i = 0; i < student.tokens.length; i++) {
+          const sTok = student.tokens[i];
+          if (sTok === qTok) {
+            bestTokScore = Math.max(bestTokScore, i === 0 ? 180 : 140);
+          } else if (sTok.startsWith(qTok)) {
+            bestTokScore = Math.max(bestTokScore, i === 0 ? 150 : 110);
+          } else if (qTok.length >= 3 && sTok.includes(qTok)) {
+            bestTokScore = Math.max(bestTokScore, 65);
+          }
+        }
+
+        if (bestTokScore === 0) {
+          allTokensMatched = false;
+          break;
+        }
+        tokenScoreSum += bestTokScore;
+      }
+
+      if (!allTokensMatched) return 0;
+      return totalScore + tokenScoreSum;
+    }
+
+    function scoreFuzzy(student, queryTokens) {
+      let fuzzyScore = 0;
+      let matchedTokens = 0;
+
+      for (let qTok of queryTokens) {
+        if (qTok.length < 2) continue;
+        let bestDist = 99;
+
+        if (/^\d+$/.test(qTok) && qTok.length >= 3) {
+          const d = levenshteinDistance(qTok, student.id);
+          if (d <= 1) bestDist = Math.min(bestDist, d);
+        }
+
+        for (let sTok of student.tokens) {
+          const target = sTok.length > qTok.length ? sTok.slice(0, qTok.length + 1) : sTok;
+          const dist = levenshteinDistance(qTok, target);
+          const maxAllowed = qTok.length <= 3 ? 1 : 2;
+          if (dist <= maxAllowed) {
+            bestDist = Math.min(bestDist, dist);
+          }
+        }
+
+        if (bestDist < 99) {
+          matchedTokens++;
+          fuzzyScore += (3 - bestDist) * 50;
+        }
+      }
+
+      if (matchedTokens === queryTokens.length && fuzzyScore > 0) {
+        return fuzzyScore;
+      }
+      return 0;
+    }
+
+    // =========================================================================
+    // 4. SMART HIGHLIGHTING ENGINE
+    // =========================================================================
+    function highlightMatch(originalText, queryTokens) {
+      if (!queryTokens || queryTokens.length === 0) return escapeHtml(originalText);
+
+      const origChars = Array.from(originalText);
+      let normStr = "";
+      const normToOrigIndex = [];
+
+      for (let i = 0; i < origChars.length; i++) {
+        const ch = origChars[i];
+        if (/[\u064B-\u065F\u0670\u0640]/.test(ch)) continue;
+        const normCh = /\s/.test(ch) ? " " : normalizeArabic(ch);
+        if (normCh) {
+          normStr += normCh;
+          normToOrigIndex.push(i);
+        }
+      }
+
+      const highlightMask = new Array(origChars.length).fill(false);
+
+      for (const qTok of queryTokens) {
+        if (!qTok) continue;
+        let searchPos = 0;
+        while (searchPos < normStr.length) {
+          const foundIdx = normStr.indexOf(qTok, searchPos);
+          if (foundIdx === -1) break;
+
+          const isWordBoundary = foundIdx === 0 || normStr[foundIdx - 1] === " ";
+          if (isWordBoundary || qTok.length >= 3) {
+            for (let k = foundIdx; k < foundIdx + qTok.length; k++) {
+              const origIdx = normToOrigIndex[k];
+              if (origIdx !== undefined) {
+                highlightMask[origIdx] = true;
+                let nextIdx = origIdx + 1;
+                while (nextIdx < origChars.length && /[\u064B-\u065F\u0670\u0640]/.test(origChars[nextIdx])) {
+                  highlightMask[nextIdx] = true;
+                  nextIdx++;
+                }
+              }
+            }
+          }
+          searchPos = foundIdx + 1;
+        }
+      }
+
+      let resultHtml = "";
+      let inMark = false;
+
+      for (let i = 0; i < origChars.length; i++) {
+        if (highlightMask[i] && !inMark) {
+          resultHtml += '<mark class="hl">';
+          inMark = true;
+        } else if (!highlightMask[i] && inMark) {
+          resultHtml += '</mark>';
+          inMark = false;
+        }
+        resultHtml += escapeHtml(origChars[i]);
+      }
+      if (inMark) resultHtml += '</mark>';
+
+      return resultHtml;
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // =========================================================================
+    // 5. UI CONTROLLER
+    // =========================================================================
+    const GROUPS_LIST = ["ALL", "A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3", "D1", "D2", "D3"];
+    const PAGE_SIZE = 60;
+    const COPY_ICON = '<svg fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>';
+    const CHECK_ICON = '<svg fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+
+    const state = { query: "", selectedGroup: "ALL", sortBy: "relevance", visibleLimit: PAGE_SIZE, currentResults: [], isFuzzy: false };
+    const $ = id => document.getElementById(id);
+    const searchInput = $("searchInput"), clearBtn = $("clearBtn"), shortcutBadge = $("shortcutBadge");
+    const groupPills = $("groupPills"), resetAllBtn = $("resetAllFilters"), sortSelect = $("sortSelect");
+    const tableBody = $("tableBody"), mobileCards = $("mobileCards"), emptyState = $("emptyState");
+    const fuzzyBanner = $("fuzzyBanner"), loadMoreBtn = $("loadMoreBtn"), showingText = $("showingCountText");
+
+    const groupCounts = { ALL: INDEXED_STUDENTS.length };
+    GROUPS_LIST.slice(1).forEach(g => { groupCounts[g] = INDEXED_STUDENTS.filter(s => s.group === g).length; });
+
+    function getTokens() {
+      const q = normalizeArabic(state.query);
+      return q ? q.split(" ").filter(Boolean) : [];
+    }
+
+    function renderGroupPills() {
+      groupPills.innerHTML = GROUPS_LIST.map(g => {
+        const label = g === "ALL" ? "الكل" : g;
+        return `<button type="button" class="chip" data-group="${g}" aria-pressed="${state.selectedGroup === g}">${label} <small class="num">${groupCounts[g]}</small></button>`;
+      }).join("");
+      const active = groupPills.querySelector('[aria-pressed="true"]');
+      if (active && active.scrollIntoView) active.scrollIntoView({ inline: "center", block: "nearest" });
+    }
+
+    function executeSearch() {
+      const rawNormQuery = normalizeArabic(state.query);
+      const queryTokens = getTokens();
+      state.isFuzzy = false;
+
+      const hasQuery = state.query.length > 0;
+      clearBtn.classList.toggle("hidden", !hasQuery);
+      shortcutBadge.classList.toggle("hidden", hasQuery);
+      resetAllBtn.classList.toggle("hidden", !(hasQuery || state.selectedGroup !== "ALL"));
+
+      const pool = state.selectedGroup === "ALL" ? INDEXED_STUDENTS : INDEXED_STUDENTS.filter(s => s.group === state.selectedGroup);
+      let results = [];
+
+      if (queryTokens.length === 0) {
+        results = pool.map(s => ({ student: s, score: 0 }));
+      } else {
+        for (const student of pool) {
+          const score = scoreExactOrPrefix(student, queryTokens, rawNormQuery);
+          if (score > 0) results.push({ student, score });
+        }
+        if (results.length === 0) {
+          for (const student of pool) {
+            const f = scoreFuzzy(student, queryTokens);
+            if (f > 0) results.push({ student, score: f });
+          }
+          state.isFuzzy = results.length > 0;
+        }
+      }
+
+      results.sort((a, b) => {
+        if (state.sortBy === "relevance" && queryTokens.length > 0 && b.score !== a.score) return b.score - a.score;
+        if (state.sortBy === "id_desc") return b.student.numId - a.student.numId;
+        if (state.sortBy === "name_asc") return a.student.name.localeCompare(b.student.name, "ar");
+        if (state.sortBy === "group_asc" && a.student.group !== b.student.group) return a.student.group.localeCompare(b.student.group);
+        return a.student.numId - b.student.numId;
+      });
+
+      state.currentResults = results;
+      renderResults(queryTokens);
+    }
+
+    function renderResults(queryTokens) {
+      const total = state.currentResults.length;
+      $("statMatched").textContent = total.toLocaleString("en-US");
+      $("statTotal").textContent = INDEXED_STUDENTS.length.toLocaleString("en-US");
+      fuzzyBanner.classList.toggle("hidden", !state.isFuzzy);
+
+      if (total === 0) {
+        tableBody.innerHTML = ""; mobileCards.innerHTML = "";
+        emptyState.classList.remove("hidden");
+        showingText.textContent = "عرض 0 من 0 طالب";
+        loadMoreBtn.classList.add("hidden");
+        return;
+      }
+      emptyState.classList.add("hidden");
+      const slice = state.currentResults.slice(0, state.visibleLimit);
+
+      tableBody.innerHTML = slice.map((item, i) => {
+        const s = item.student;
+        return `<tr>
+          <td class="c idx num">${i + 1}</td>
+          <td><span class="sid mono">${highlightMatch(s.id, queryTokens)}</span></td>
+          <td class="name">${highlightMatch(s.name, queryTokens)}</td>
+          <td class="c"><span class="tag mono ${s.group[0]}">${s.group}</span></td>
+          <td class="c"><button type="button" class="copy-btn" data-copy="${s.originalIndex}" title="نسخ بيانات الطالب" aria-label="نسخ بيانات ${escapeHtml(s.name)}">${COPY_ICON}</button></td>
+        </tr>`;
+      }).join("");
+
+      mobileCards.innerHTML = slice.map(item => {
+        const s = item.student;
+        return `<div class="card">
+          <div class="body">
+            <div class="meta"><span class="sid mono">${highlightMatch(s.id, queryTokens)}</span><span class="tag mono ${s.group[0]}">${s.group}</span></div>
+            <div class="name">${highlightMatch(s.name, queryTokens)}</div>
+          </div>
+          <button type="button" class="copy-btn" data-copy="${s.originalIndex}" aria-label="نسخ بيانات ${escapeHtml(s.name)}">${COPY_ICON}</button>
+        </div>`;
+      }).join("");
+
+      showingText.textContent = `عرض ${slice.length} من ${total} طالب`;
+      const remaining = total - slice.length;
+      loadMoreBtn.classList.toggle("hidden", remaining <= 0);
+      if (remaining > 0) loadMoreBtn.textContent = `عرض المزيد (${remaining})`;
+    }
+
+    // =========================================================================
+    // 6. CLIPBOARD, CSV EXPORT, TOAST & EVENTS
+    // =========================================================================
+    let toastTimer;
+    function showToast(message) {
+      const toast = $("toast");
+      $("toastMsg").textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function legacyCopy(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", "");
+      ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;font-size:16px";
+      document.body.appendChild(ta);
+      ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    }
+
+    async function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        try { await navigator.clipboard.writeText(text); return true; } catch (e) { /* fall back below */ }
+      }
+      return legacyCopy(text);
+    }
+
+    async function copyStudent(btn) {
+      const s = INDEXED_STUDENTS[Number(btn.dataset.copy)];
+      if (!s) return;
+      const ok = await copyText(`${s.name} | رقم الجلوس: ${s.id} | المجموعة: ${s.group} | المستوى الأول`);
+      if (!ok) { showToast("تعذر النسخ، انسخ الاسم يدوياً"); return; }
+      showToast(`تم نسخ: ${s.name}`);
+      btn.classList.add("done"); btn.innerHTML = CHECK_ICON;
+      setTimeout(() => { btn.classList.remove("done"); btn.innerHTML = COPY_ICON; }, 1400);
+    }
+
+    function exportCsv() {
+      if (state.currentResults.length === 0) { showToast("لا توجد نتائج لتصديرها"); return; }
+      const headers = ["رقم الجلوس", "الاسم", "المجموعة", "المستوى"];
+      const rows = state.currentResults.map(r => [r.student.id, `"${r.student.name.replace(/"/g, '""')}"`, r.student.group, r.student.level]);
+      const csv = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
+      const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = state.selectedGroup === "ALL" ? "طلاب_المستوى_الأول.csv" : `طلاب_المستوى_الأول_مجموعة_${state.selectedGroup}.csv`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast(`تم تصدير ${state.currentResults.length} سجل`);
+    }
+
+    function resetAll() {
+      state.query = ""; state.selectedGroup = "ALL"; state.visibleLimit = PAGE_SIZE;
+      searchInput.value = "";
+      renderGroupPills(); executeSearch();
+      searchInput.focus();
+    }
+
+    searchInput.addEventListener("input", e => { state.query = e.target.value; state.visibleLimit = PAGE_SIZE; executeSearch(); });
+    searchInput.addEventListener("keydown", e => { if (e.key === "Enter") searchInput.blur(); }); // closes the mobile keyboard
+    clearBtn.addEventListener("click", () => { state.query = ""; searchInput.value = ""; state.visibleLimit = PAGE_SIZE; executeSearch(); searchInput.focus(); });
+    resetAllBtn.addEventListener("click", resetAll);
+    $("emptyResetBtn").addEventListener("click", resetAll);
+    $("exportBtn").addEventListener("click", exportCsv);
+    sortSelect.addEventListener("change", e => { state.sortBy = e.target.value; state.visibleLimit = PAGE_SIZE; executeSearch(); });
+    loadMoreBtn.addEventListener("click", () => { state.visibleLimit += 80; renderResults(getTokens()); });
+
+    groupPills.addEventListener("click", e => {
+      const btn = e.target.closest("button[data-group]");
+      if (!btn) return;
+      state.selectedGroup = btn.dataset.group; state.visibleLimit = PAGE_SIZE;
+      renderGroupPills(); executeSearch();
+    });
+
+    // One delegated listener handles copy buttons in both the table and the mobile cards
+    document.addEventListener("click", e => {
+      const btn = e.target.closest("[data-copy]");
+      if (btn) copyStudent(btn);
+    });
+
+    document.addEventListener("keydown", e => {
+      const tag = (document.activeElement && document.activeElement.tagName) || "";
+      const typing = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); searchInput.focus(); searchInput.select(); }
+      else if (e.key === "/" && !typing) { e.preventDefault(); searchInput.focus(); }
+      else if (e.key === "Escape" && document.activeElement === searchInput && state.query) clearBtn.click();
+    });
+
+    renderGroupPills();
+    executeSearch();
+  </script>
+</body>
+</html>
